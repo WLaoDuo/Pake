@@ -39,6 +39,10 @@ if (process.env.TARGETS) {
   params = `${params} --targets ${process.env.TARGETS}`;
 }
 
+if (process.env.UA) {
+  params = `${params} --user-agent ${process.env.UA}`;
+}
+
 if (process.platform === 'win32') {
   params = `${params} --show-system-tray`;
 }
