@@ -17,6 +17,9 @@ on:
       name:
         description: '[Name]'
         required: true
+      ua:
+        description: '[user agent]'
+        required: true
       icon:
         description: '[Icon, Optional]'
         required: false
@@ -129,6 +132,7 @@ jobs:
           RESIZE: ${{ inputs.resize }}
           MULTI_ARCH: ${{ inputs.multi_arch }}
           TARGETS: ${{ inputs.targets }}
+          UA: ${{inputs.ua}}
 
       - name: Upload archive
         uses: actions/upload-artifact@v3
