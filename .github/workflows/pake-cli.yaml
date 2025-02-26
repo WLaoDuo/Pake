@@ -17,6 +17,9 @@ on:
       name:
         description: 'Name, English, Linux no capital'
         required: true
+      ua:
+        description: 'User Agent'
+        required: true
       icon:
         description: 'Icon, Image URL, Optional'
         required: false
@@ -133,6 +136,7 @@ jobs:
           FULLSCREEN: ${{ inputs.fullscreen }}
           MULTI_ARCH: ${{ inputs.multi_arch }}
           TARGETS: ${{ inputs.targets }}
+          UA: ${{inputs.ua}}
 
       - name: Upload archive
         uses: actions/upload-artifact@v4
