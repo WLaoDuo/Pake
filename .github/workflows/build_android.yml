@@ -83,7 +83,7 @@ jobs:
         run: |
           # 设置 OpenSSL 环境变量
           echo "OPENSSL_DIR=/usr" >> $GITHUB_ENV
-          echo "PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig/:/usr/lib/arm-linux-gnueabihf/pkgconfig:$NDK_HOME/sysroot/usr/lib/pkgconfig" >> $GITHUB_ENV
+          echo "PKG_CONFIG_PATH=/usr/share/pkgconfig:/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/arm-linux-gnueabihf/pkgconfig:$NDK_HOME/sysroot/usr/lib/pkgconfig" >> $GITHUB_ENV
           echo "PKG_CONFIG_SYSROOT_DIR=$NDK_HOME/sysroot" >> $GITHUB_ENV
 
       - name: Install Android Target
