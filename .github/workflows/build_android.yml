@@ -5,7 +5,7 @@ on:
       platform:
         description: 'platform'
         required: true
-        default: 'ubuntu-20.04'
+        default: 'ubuntu-22.04'
         type: choice
         options:
           - 'android4'
@@ -30,12 +30,12 @@ on:
 jobs:
   build_single_app:
     name: android4
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         include:
           - platform: android4
-            os: ubuntu-20.04
+            os: ubuntu-22.04
             rust: stable
             target: armv7-linux-androideabi
             ndk: r25c
