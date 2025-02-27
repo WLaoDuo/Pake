@@ -100,6 +100,13 @@ jobs:
         env:
           URL: ${{ inputs.url }}
           NAME: ${{ inputs.name }}
+          ICON: ${{ inputs.icon }}
+          HEIGHT: ${{ inputs.height }}
+          WIDTH: ${{ inputs.width }}
+          # HIDE_TITLE_BAR: ${{ inputs.hide_title_bar }}
+          # FULLSCREEN: ${{ inputs.fullscreen }
+          # MULTI_ARCH: ${{ inputs.multi_arch }}
+          # TARGETS: ${{ inputs.targets }}
         run: |
           node ./script/build_with_pake_cli.js
 
