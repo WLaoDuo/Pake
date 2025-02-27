@@ -71,7 +71,8 @@ jobs:
             libayatana-appindicator3-dev \
             librsvg2-dev \
             gnome-video-effects \
-            gnome-video-effects-extra
+            gnome-video-effects-extra \
+            libsoup-3.0-0
 
       - name: Setup Android NDK
         run: |
