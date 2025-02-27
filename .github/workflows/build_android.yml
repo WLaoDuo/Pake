@@ -1,0 +1,140 @@
+name: Build App With Pake CLI-android
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'platform'
+        required: true
+        default: 'ubuntu-22.04'
+        type: choice
+        options:
+          - 'android4'
+      url:
+        description: '[URL]'
+        required: true
+      name:
+        description: '[Name]'
+        required: true
+      icon:
+        description: '[Icon, Optional]'
+        required: false
+      width:
+        description: '[Width, Optional]'
+        required: false
+        default: '1200'
+      height:
+        description: '[Height, Optional]'
+        required: false
+        default: '780'
+
+jobs:
+  build_single_app:
+    name: android4
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        include:
+          - platform: android4
+            os: ubuntu-22.04
+            rust: stable
+            target: armv7-linux-androideabi
+            ndk: r25c
+            api_level: 19
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: x86_64-unknown-linux-musl, armv7-linux-androideabi
+
+      - name: Install Ubuntu dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            pkg-config \
+            libwebkit2gtk-4.0-dev \
+            build-essential \
+            curl \
+            wget \
+            libssl-dev \
+            libglib2.0-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            gnome-video-effects \
+            gnome-video-effects-extra \
+            libsoup-3.0-0
+
+      - name: Setup Android NDK
+        run: |
+          wget https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
+          unzip android-ndk-r25c-linux.zip -d $ANDROID_HOME/ndk
+          echo "NDK_HOME=$ANDROID_HOME/ndk/android-ndk-r25c" >> $GITHUB_ENV
+
+      - name: Configure OpenSSL and pkg-config
+        run: |
+          # 设置 OpenSSL 环境变量
+          echo "OPENSSL_DIR=/usr" >> $GITHUB_ENV
+          echo "PKG_CONFIG_PATH=/usr/share/pkgconfig:/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/arm-linux-gnueabihf/pkgconfig:$NDK_HOME/sysroot/usr/lib/pkgconfig" >> $GITHUB_ENV
+          echo "PKG_CONFIG_SYSROOT_DIR=$NDK_HOME/sysroot" >> $GITHUB_ENV
+
+      - name: Install Android Target
+        run: |
+          rustup target add ${{ matrix.target }}
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "NDK_HOME=$NDK_HOME" >> $GITHUB_ENV
+
+      - name: Install pake-cli
+        run: |
+          npm install pake-cli
+
+      - name: Build with pake-cli
+        env:
+          URL: ${{ inputs.url }}
+          NAME: ${{ inputs.name }}
+          ICON: ${{ inputs.icon }}
+          HEIGHT: ${{ inputs.height }}
+          WIDTH: ${{ inputs.width }}
+          # HIDE_TITLE_BAR: ${{ inputs.hide_title_bar }}
+          # FULLSCREEN: ${{ inputs.fullscreen }
+          # MULTI_ARCH: ${{ inputs.multi_arch }}
+          # TARGETS: ${{ inputs.targets }}
+        run: |
+          node ./script/build_with_pake_cli.js
+
+      - name: Build Android APK (Tauri 2.0)
+        env:
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
+          ANDROID_NDK_ROOT: ${{ env.NDK_HOME }}
+        run: |
+          # 配置交叉编译
+          mkdir -p ~/.cargo
+          cat <<EOF >> ~/.cargo/config.toml
+          [target.armv7-linux-androideabi]
+          ar = "$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ar"
+          linker = "$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi${{ matrix.api_level }}-clang"
+          EOF
+
+          # 执行 Tauri 2.0 构建
+          npm run tauri android init
+          npm run tauri android build -- --target armv7
+
+          # 复制 APK 文件
+          mkdir -p output/android
+          cp src-tauri/target/*/release/*.apk output/android/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: output/android/*.apk
+          retention-days: 3
