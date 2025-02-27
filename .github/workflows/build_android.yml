@@ -124,6 +124,7 @@ jobs:
           EOF
 
           # 执行 Tauri 2.0 构建
+          npm run tauri android init
           npm run tauri android build -- --target armv7
 
           # 复制 APK 文件
