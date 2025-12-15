@@ -9,7 +9,7 @@ import { execa } from "execa";
 
 // Environment variables expected from GitHub Actions
 const ENV_VARS = {
-  required: ["URL", "NAME", "HEIGHT", "WIDTH"],
+  required: ["URL", "NAME", "HEIGHT", "WIDTH","UA"],
   optional: ["ICON", "FULLSCREEN", "HIDE_TITLE_BAR", "MULTI_ARCH", "TARGETS"],
 };
 
@@ -106,6 +106,8 @@ class PakeBuildManager {
       process.env.HEIGHT,
       "--width",
       process.env.WIDTH,
+      "--user-agent",
+      process.env.UA,
     ];
 
     // Platform-specific parameters
