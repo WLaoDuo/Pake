@@ -22,6 +22,10 @@ on:
       name:
         description: "Name, English, Linux no capital"
         required: true
+      ua:
+        description: "ua头"
+        required: false
+        default: "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0"
       icon:
         description: "Icon, Image URL, Optional"
         required: false
@@ -126,6 +130,7 @@ jobs:
           FULLSCREEN: ${{ inputs.fullscreen }}
           MULTI_ARCH: ${{ inputs.multi_arch }}
           TARGETS: ${{ inputs.targets }}
+          USER-AGENT: ${{ inputs.ua }}
           PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
           PKG_CONFIG_ALLOW_SYSTEM_LIBS: 1
           PKG_CONFIG_ALLOW_SYSTEM_CFLAGS: 1
